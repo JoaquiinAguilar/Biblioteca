@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="text-3xl font-semibold text-gray-900 mb-8">Mis Reservas</h1>
+
+{% if active_rental %}
+<div class="bg-white p-8 rounded-xl shadow-lg transform transition-all duration-300 hover:shadow-xl max-w-2xl mx-auto">
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">Cubículo Reservado: {{ active_rental.cubicle.name }}</h2>
+    <p class="text-gray-700 mb-2">Capacidad: {{ active_rental.cubicle.capacity }}</p>
+    <p class="text-gray-700 mb-2">Hora de Inicio: {{ active_rental.scheduled_start_time|date:"d M Y H:i" }}</p>
+    <p class="text-gray-700 mb-4">Hora de Finalización Estimada: {{ active_rental.scheduled_end_time|date:"d M Y H:i" }}</p>
+    
+    <a href="{% url 'release_my_cubicle' active_rental.id %}" class="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-sm font-medium">
+        Liberar Cubículo Ahora
+    </a>
+</div>
+{% else %}
+<div class="bg-white p-8 rounded-xl shadow-lg max-w-2xl mx-auto text-center">
+    <p class="text-xl text-gray-700">No tienes ninguna reserva de cubículo activa en este momento.</p>
+    <a href="{% url 'dashboard' %}" class="mt-6 inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-lg font-medium">
+        Explorar Cubículos
+    </a>
+</div>
+{% endif %}
+{% endblock %}

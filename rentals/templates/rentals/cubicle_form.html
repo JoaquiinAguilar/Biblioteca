@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-lg mx-auto p-8 bg-white rounded-xl shadow-lg transform transition-all duration-300 hover:shadow-xl">
+    <h1 class="text-3xl font-semibold text-gray-900 mb-6">
+        {% if object %}Editar Cubículo: {{ object.name }}{% else %}Añadir Nuevo Cubículo{% endif %}
+    </h1>
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
+        {% for field in form %}
+            <div>
+                <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <p class="mt-1 text-sm text-gray-500">{{ field.help_text }}</p>
+                {% endif %}
+                {% for error in field.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <div class="mt-6">
+            <button type="submit" class="w-full px-4 py-2.5 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                {% if object %}Guardar Cambios{% else %}Añadir Cubículo{% endif %}
+            </button>
+            <a href="{% url 'cubicle_list_admin' %}" class="mt-3 w-full inline-block text-center px-4 py-2.5 font-semibold text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors duration-200">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Custom styling for form fields to match the aesthetic */
+    .form-control {
+        @apply w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200;
+    }
+</style>
+
+<script>
+    // Add the custom class to all form input fields
+    document.addEventListener('DOMContentLoaded', function() {
+        const formFields = document.querySelectorAll('#id_name, #id_capacity, #id_status');
+        formFields.forEach(field => {
+            field.classList.add('form-control');
+        });
+    });
+</script>
+{% endblock %}

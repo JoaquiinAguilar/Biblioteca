@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="text-3xl font-semibold text-gray-900 mb-8">Dashboard de Cubículos</h1>
+
+{% if user_active_rental %}
+<div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded-lg" role="alert">
+    <p class="font-bold">Ya tienes un cubículo reservado!</p>
+    <p>Puedes ver los detalles de tu reserva <a href="{% url 'my_rentals' %}" class="font-semibold underline hover:text-yellow-800">aquí</a>.</p>
+</div>
+{% endif %}
+
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    {% for cubicle in cubicles %}
+    <div class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between transform transition-all duration-300 hover:scale-105 h-64"> {# Added fixed height #}
+        <a href="{% url 'cubicle_detail' cubicle.pk %}" class="block flex-grow"> {# Make content area clickable #}
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">{{ cubicle.name }}</h2>
+                <p class="text-gray-600 mb-1">Capacidad: <span class="font-medium">{{ cubicle.capacity }}</span></p>
+                <p class="text-gray-600 mb-4">Estado:
+                    <span class="font-semibold
+                        {% if cubicle.status == 'disponible' %}text-green-600{% elif cubicle.status == 'ocupado' %}text-red-600{% else %}text-yellow-600{% endif %}">
+                        {{ cubicle.get_status_display }}
+                    </span>
+                </p>
+                {% if cubicle.status == 'ocupado' and cubicle.active_rental %}
+                    <p class="text-sm text-gray-500 mb-1">Ocupado por: {{ cubicle.active_rental.student.full_name }} ({{ cubicle.active_rental.student.control_number }})</p>
+                    <p class="text-sm text-gray-500">Liberación: {{ cubicle.active_rental.scheduled_end_time|time:"H:i" }}</p>
+                {% elif cubicle.status == 'ocupado' %}
+                    <p class="text-sm text-gray-500">Ocupado (información no disponible)</p>
+                {% endif %}
+            </div>
+        </a>
+        {# Action buttons are now outside the clickable content area #}
+        {% if cubicle.status == 'disponible' and not user_active_rental %}
+            <a href="{% url 'rent_cubicle' cubicle.id %}" class="mt-4 w-full inline-block text-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">Rentar</a>
+        {% elif cubicle.status == 'disponible' and user_active_rental %}
+            <button class="mt-4 w-full inline-block text-center bg-gray-300 text-gray-700 px-4 py-2 rounded-lg cursor-not-allowed" disabled>Ya tienes una reserva</button>
+        {% else %}
+            <button class="mt-4 w-full inline-block text-center bg-gray-300 text-gray-700 px-4 py-2 rounded-lg cursor-not-allowed" disabled>Ocupado</button>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

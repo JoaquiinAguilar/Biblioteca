@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto p-8 bg-white rounded-xl shadow-lg transform transition-all duration-300 hover:shadow-xl">
+    <h1 class="text-3xl font-semibold text-gray-900 mb-6">Detalles del Cubículo: <span class="text-blue-600">{{ cubicle.name }}</span></h1>
+
+    <div class="space-y-4 mb-6">
+        <p class="text-gray-700 text-lg"><strong>Nombre:</strong> {{ cubicle.name }}</p>
+        <p class="text-gray-700 text-lg"><strong>Capacidad:</strong> {{ cubicle.capacity }}</p>
+        <p class="text-gray-700 text-lg"><strong>Estado:</strong>
+            <span class="font-semibold
+                {% if cubicle.status == 'disponible' %}text-green-600{% elif cubicle.status == 'ocupado' %}text-red-600{% else %}text-yellow-600{% endif %}">
+                {{ cubicle.get_status_display }}
+            </span>
+        </p>
+    </div>
+
+    {% if cubicle.status == 'ocupado' and active_rental %}
+        <div class="bg-red-50 p-6 rounded-lg border border-red-200 mb-6">
+            <h2 class="text-xl font-semibold text-red-800 mb-3">Información de Ocupación</h2>
+            <p class="text-gray-700 mb-1"><strong>Ocupado por:</strong> {{ active_rental.student.full_name }} ({{ active_rental.student.control_number }})</p>
+            <p class="text-gray-700 mb-1"><strong>Carrera:</strong> {{ active_rental.student.career.name }}</p>
+            <p class="text-gray-700 mb-1"><strong>Rented by (Staff):</strong> {{ active_rental.rented_by.username }}</p>
+            <p class="text-gray-700 mb-1"><strong>Hora de Inicio:</strong> {{ active_rental.scheduled_start_time|date:"d M Y H:i" }}</p>
+            <p class="text-gray-700"><strong>Hora de Finalización Estimada:</strong> {{ active_rental.scheduled_end_time|date:"d M Y H:i" }}</p>
+        </div>
+    {% elif cubicle.status == 'ocupado' %}
+        <div class="bg-red-50 p-6 rounded-lg border border-red-200 mb-6">
+            <h2 class="text-xl font-semibold text-red-800 mb-3">Información de Ocupación</h2>
+            <p class="text-gray-700">Cubículo ocupado, pero la información detallada de la renta no está disponible.</p>
+        </div>
+    {% endif %}
+
+    <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 mt-6">
+        {% if user.is_staff %}
+            <a href="{% url 'cubicle_update' cubicle.pk %}" class="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm font-medium text-center">
+                <i class="fas fa-edit mr-2"></i>Editar Cubículo
+            </a>
+            <a href="{% url 'cubicle_delete' cubicle.pk %}" class="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-sm font-medium text-center">
+                <i class="fas fa-trash-alt mr-2"></i>Eliminar Cubículo
+            </a>
+            {% if cubicle.status == 'ocupado' %}
+                <a href="{% url 'force_release_cubicle' cubicle.pk %}" class="px-5 py-2.5 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors duration-200 text-sm font-medium text-center">
+                    <i class="fas fa-hand-sparkles mr-2"></i>Liberar Cubículo (Admin)
+                </a>
+            {% endif %}
+        {% elif is_occupying_user %} {# Client is occupying this cubicle #}
+            <a href="{% url 'release_my_cubicle' active_rental.id %}" class="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-sm font-medium text-center">
+                <i class="fas fa-door-open mr-2"></i>Liberar mi Cubículo Ahora
+            </a>
+        {% endif %}
+        <a href="{% url 'dashboard' %}" class="px-5 py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors duration-200 text-sm font-medium text-center">
+            <i class="fas fa-arrow-left mr-2"></i>Volver al Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

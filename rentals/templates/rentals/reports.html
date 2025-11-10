@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="text-3xl font-semibold text-gray-900 mb-8">Reportes</h1>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Cubicle Usage Report -->
+    <div class="bg-white p-8 rounded-xl shadow-lg transform transition-all duration-300 hover:shadow-xl">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+            <h2 class="text-2xl font-semibold text-gray-900 mb-3 sm:mb-0">Uso de Cubículos</h2>
+            <a href="?export=csv&report=cubicle" class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm font-medium">Exportar a CSV</a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border-collapse">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider border-b border-gray-200">Cubículo</th>
+                        <th class="py-3 px-4 text-center text-sm font-medium text-gray-600 uppercase tracking-wider border-b border-gray-200">Total de Rentas</th>
+                        <th class="py-3 px-4 text-center text-sm font-medium text-gray-600 uppercase tracking-wider border-b border-gray-200">Duración Total (min)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in cubicle_usage %}
+                    <tr class="hover:bg-gray-50 transition-colors duration-150">
+                        <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 border-b border-gray-200">{{ row.cubicle__name }}</td>
+                        <td class="py-3 px-4 whitespace-nowrap text-center text-sm text-gray-800 border-b border-gray-200">{{ row.rental_count }}</td>
+                        <td class="py-3 px-4 whitespace-nowrap text-center text-sm text-gray-800 border-b border-gray-200">{{ row.total_duration }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="py-3 px-4 text-center text-sm text-gray-500 border-b border-gray-200">No hay datos de uso de cubículos.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Career Usage Report -->
+    <div class="bg-white p-8 rounded-xl shadow-lg transform transition-all duration-300 hover:shadow-xl">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+            <h2 class="text-2xl font-semibold text-gray-900 mb-3 sm:mb-0">Uso por Carrera</h2>
+            <a href="?export=csv&report=career" class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm font-medium">Exportar a CSV</a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border-collapse">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wider border-b border-gray-200">Carrera</th>
+                        <th class="py-3 px-4 text-center text-sm font-medium text-gray-600 uppercase tracking-wider border-b border-gray-200">Total de Rentas</th>
+                        <th class="py-3 px-4 text-center text-sm font-medium text-gray-600 uppercase tracking-wider border-b border-gray-200">Duración Total (min)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in career_usage %}
+                    <tr class="hover:bg-gray-50 transition-colors duration-150">
+                        <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800 border-b border-gray-200">{{ row.student__career__name }}</td>
+                        <td class="py-3 px-4 whitespace-nowrap text-center text-sm text-gray-800 border-b border-gray-200">{{ row.rental_count }}</td>
+                        <td class="py-3 px-4 whitespace-nowrap text-center text-sm text-gray-800 border-b border-gray-200">{{ row.total_duration }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="py-3 px-4 text-center text-sm text-gray-500 border-b border-gray-200">No hay datos de uso por carrera.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

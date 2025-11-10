@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-lg mx-auto p-8 bg-white rounded-xl shadow-lg transform transition-all duration-300 hover:shadow-xl">
+    <h1 class="text-3xl font-semibold text-gray-900 mb-6">Rentar Cubículo: <span class="text-blue-600">{{ cubicle.name }}</span></h1>
+
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="relative"> {# Add relative positioning for dropdown #}
+                <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <p class="mt-1 text-sm text-gray-500">{{ field.help_text }}</p>
+                {% endif %}
+                {% for error in field.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                {% endfor %}
+                {# Add suggestion container for control_number and full_name #}
+                {% if field.id_for_label == 'id_control_number' %}
+                    <div id="control-number-suggestions" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 hidden"></div>
+                {% elif field.id_for_label == 'id_full_name' %}
+                    <div id="full-name-suggestions" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 hidden"></div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <div class="mt-6">
+            <button type="submit" class="w-full px-4 py-2.5 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                Confirmar Renta
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Custom styling for form fields to match the aesthetic */
+    .form-control {
+        @apply w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200;
+    }
+    .suggestion-item {
+        @apply px-4 py-2 cursor-pointer hover:bg-blue-50;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const controlNumberInput = document.getElementById('id_control_number');
+        const fullNameInput = document.getElementById('id_full_name');
+        const careerInput = document.getElementById('id_career');
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        const controlNumberSuggestions = document.getElementById('control-number-suggestions');
+        const fullNameSuggestions = document.getElementById('full-name-suggestions');
+
+        // Add the custom class to all form input fields
+        const formFields = document.querySelectorAll('#id_control_number, #id_full_name, #id_career, #id_requested_duration');
+        formFields.forEach(field => {
+            field.classList.add('form-control');
+        });
+
+        let debounceTimer;
+
+        function clearSuggestions() {
+            controlNumberSuggestions.innerHTML = '';
+            controlNumberSuggestions.classList.add('hidden');
+            fullNameSuggestions.innerHTML = '';
+            fullNameSuggestions.classList.add('hidden');
+        }
+
+        function fillFormWithStudent(student) {
+            controlNumberInput.value = student.control_number;
+            fullNameInput.value = student.full_name;
+            if (student.career_id) {
+                const careerOptionExists = Array.from(careerInput.options).some(option => option.value == student.career_id);
+                if (careerOptionExists) {
+                    careerInput.value = student.career_id;
+                } else {
+                    console.warn(`Career ID ${student.career_id} not found in dropdown options.`);
+                    careerInput.value = '';
+                }
+            } else {
+                careerInput.value = '';
+            }
+            clearSuggestions();
+        }
+
+        function performSearch(query, targetSuggestionsContainer, sourceField) {
+            if (query.length > 2) {
+                fetch(`{% url 'search_student_ajax' %}?query=${query}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('AJAX Response Data:', data);
+                    targetSuggestionsContainer.innerHTML = '';
+                    if (data.length > 0) {
+                        data.forEach(student => {
+                            const div = document.createElement('div');
+                            div.classList.add('suggestion-item');
+                            div.textContent = `${student.full_name} (${student.control_number}) - ${student.career}`;
+                            div.addEventListener('click', () => fillFormWithStudent(student));
+                            targetSuggestionsContainer.appendChild(div);
+                        });
+                        targetSuggestionsContainer.classList.remove('hidden');
+                    } else {
+                        targetSuggestionsContainer.classList.add('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error searching student:', error);
+                    targetSuggestionsContainer.classList.add('hidden');
+                });
+            } else {
+                clearSuggestions();
+            }
+        }
+
+        if (controlNumberInput) {
+            controlNumberInput.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    performSearch(controlNumberInput.value, controlNumberSuggestions, controlNumberInput);
+                }, 300);
+            });
+            controlNumberInput.addEventListener('focus', () => {
+                if (controlNumberSuggestions.children.length > 0) {
+                    controlNumberSuggestions.classList.remove('hidden');
+                }
+            });
+            controlNumberInput.addEventListener('blur', () => {
+                // Delay hiding to allow click event on suggestion
+                setTimeout(clearSuggestions, 100);
+            });
+        }
+
+        if (fullNameInput) {
+            fullNameInput.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    performSearch(fullNameInput.value, fullNameSuggestions, fullNameInput);
+                }, 300);
+            });
+            fullNameInput.addEventListener('focus', () => {
+                if (fullNameSuggestions.children.length > 0) {
+                    fullNameSuggestions.classList.remove('hidden');
+                }
+            });
+            fullNameInput.addEventListener('blur', () => {
+                // Delay hiding to allow click event on suggestion
+                setTimeout(clearSuggestions, 100);
+            });
+        }
+    });
+</script>
+{% endblock %}

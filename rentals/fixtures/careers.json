@@ -1,0 +1,58 @@
+[
+    {
+        "model": "rentals.career",
+        "pk": 1,
+        "fields": {
+            "name": "ING SISTEMAS COMPUTACIONALES"
+        }
+    },
+    {
+        "model": "rentals.career",
+        "pk": 2,
+        "fields": {
+            "name": "ING GESTIÓN EMPRESARIAL"
+        }
+    },
+    {
+        "model": "rentals.career",
+        "pk": 3,
+        "fields": {
+            "name": "ING LOGÍSTICA"
+        }
+    },
+    {
+        "model": "rentals.career",
+        "pk": 4,
+        "fields": {
+            "name": "ING INDUSTRIAL"
+        }
+    },
+    {
+        "model": "rentals.career",
+        "pk": 5,
+        "fields": {
+            "name": "ING MECÁNICA"
+        }
+    },
+    {
+        "model": "rentals.career",
+        "pk": 6,
+        "fields": {
+            "name": "ING MECATRONICA"
+        }
+    },
+    {
+        "model": "rentals.career",
+        "pk": 7,
+        "fields": {
+            "name": "ING ELÉCTRICA"
+        }
+    },
+    {
+        "model": "rentals.career",
+        "pk": 8,
+        "fields": {
+            "name": "ING ELECTRÓNICA"
+        }
+    }
+]
