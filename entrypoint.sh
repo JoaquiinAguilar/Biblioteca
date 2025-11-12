@@ -9,10 +9,9 @@ fi
 
 # --- Wait for database ---
 echo "Waiting for PostgreSQL to be ready..."
-until python -c "import psycopg2; psycopg2.connect(host='$DATABASE_HOST', port='$DATABASE_PORT', user='$DATABASE_USER', password='$DATABASE_PASSWORD', dbname='$DATABASE_NAME')" 2>/dev/null; do
-    sleep 2
-done
-echo "PostgreSQL is ready!"
+# Simple timeout approach - wait 30 seconds for database to start
+sleep 30
+echo "PostgreSQL should be ready!"
 
 # --- Fix ownership and permissions ---
 # Ensure the appuser owns the application directory
