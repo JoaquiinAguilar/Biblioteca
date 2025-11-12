@@ -3,12 +3,9 @@ set -e
 
 # --- Wait for database ---
 echo "Waiting for PostgreSQL to be ready..."
-# Use netcat to check if database is ready
-until nc -z $DATABASE_HOST $DATABASE_PORT; do
-    echo "Database unavailable, waiting 2 seconds..."
-    sleep 2
-done
-echo "PostgreSQL is ready!"
+# Simple sleep approach - wait for database to start
+sleep 30
+echo "PostgreSQL should be ready!"
 
 # --- Fix ownership and permissions ---
 # Ensure the appuser owns the application directory
