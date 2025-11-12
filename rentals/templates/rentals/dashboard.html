@@ -3,12 +3,7 @@
 {% block content %}
 <h1 class="text-3xl font-semibold text-gray-900 mb-8">Dashboard de Cubículos</h1>
 
-{% if user_active_rental %}
-<div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded-lg" role="alert">
-    <p class="font-bold">Ya tienes un cubículo reservado!</p>
-    <p>Puedes ver los detalles de tu reserva <a href="{% url 'my_rentals' %}" class="font-semibold underline hover:text-yellow-800">aquí</a>.</p>
-</div>
-{% endif %}
+
 
 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
     {% for cubicle in cubicles %}
@@ -36,6 +31,12 @@
             <a href="{% url 'rent_cubicle' cubicle.id %}" class="mt-4 w-full inline-block text-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">Rentar</a>
         {% elif cubicle.status == 'disponible' and user_active_rental %}
             <button class="mt-4 w-full inline-block text-center bg-gray-300 text-gray-700 px-4 py-2 rounded-lg cursor-not-allowed" disabled>Ya tienes una reserva</button>
+        {% elif cubicle.status == 'ocupado' and cubicle.active_rental %}
+            {% if user.is_staff %}
+                <a href="{% url 'force_release_cubicle' cubicle.pk %}" class="mt-4 w-full inline-block text-center bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors duration-200">Liberar (Admin)</a>
+            {% else %}
+                <a href="{% url 'release_my_cubicle' cubicle.active_rental.id %}" class="mt-4 w-full inline-block text-center bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-200">Liberar</a>
+            {% endif %}
         {% else %}
             <button class="mt-4 w-full inline-block text-center bg-gray-300 text-gray-700 px-4 py-2 rounded-lg cursor-not-allowed" disabled>Ocupado</button>
         {% endif %}

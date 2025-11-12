@@ -3,7 +3,7 @@ from django.contrib.auth.views import LoginView
 from .views import (
     dashboard, rent_cubicle, reports, upload_csv,
     cubicle_list_admin, cubicle_create, cubicle_update, cubicle_delete, force_release_cubicle,
-    my_rentals, release_my_cubicle, search_student_ajax, cubicle_detail
+    release_my_cubicle, search_student_ajax, cubicle_detail
 )
 
 urlpatterns = [
@@ -21,7 +21,6 @@ urlpatterns = [
     path('management/cubicles/<int:pk>/release/', force_release_cubicle, name='force_release_cubicle'),
 
     # Client Rental Management URLs
-    path('my-rentals/', my_rentals, name='my_rentals'),
     path('my-rentals/<int:rental_id>/release/', release_my_cubicle, name='release_my_cubicle'),
     path('ajax/search-student/', search_student_ajax, name='search_student_ajax'),
     path('cubicles/<int:pk>/', cubicle_detail, name='cubicle_detail'),

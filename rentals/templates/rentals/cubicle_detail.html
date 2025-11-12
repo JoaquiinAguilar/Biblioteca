@@ -44,9 +44,9 @@
                     <i class="fas fa-hand-sparkles mr-2"></i>Liberar Cubículo (Admin)
                 </a>
             {% endif %}
-        {% elif is_occupying_user %} {# Client is occupying this cubicle #}
+        {% elif cubicle.status == 'ocupado' and active_rental %}
             <a href="{% url 'release_my_cubicle' active_rental.id %}" class="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-sm font-medium text-center">
-                <i class="fas fa-door-open mr-2"></i>Liberar mi Cubículo Ahora
+                <i class="fas fa-door-open mr-2"></i>Liberar Cubículo
             </a>
         {% endif %}
         <a href="{% url 'dashboard' %}" class="px-5 py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors duration-200 text-sm font-medium text-center">

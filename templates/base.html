@@ -26,6 +26,73 @@
                 margin-right: 0.5rem; /* Space between icon and text */
             }
         }
+        /* Global form styling to ensure all inputs have borders */
+        input[type="text"],
+        input[type="password"],
+        input[type="number"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="search"],
+        input[type="url"],
+        input[type="date"],
+        input[type="time"],
+        input[type="datetime-local"],
+        input[type="month"],
+        input[type="week"],
+        input[type="color"],
+        input[type="range"],
+        input[type="file"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #2d3748;
+            transition: all 0.2s ease-in-out;
+            outline: none;
+            background-color: #ffffff;
+        }
+        
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="number"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        input[type="search"]:focus,
+        input[type="url"]:focus,
+        input[type="date"]:focus,
+        input[type="time"]:focus,
+        input[type="datetime-local"]:focus,
+        input[type="month"]:focus,
+        input[type="week"]:focus,
+        input[type="color"]:focus,
+        input[type="range"]:focus,
+        input[type="file"]:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+        
+        /* Ensure form-control class also has proper styling */
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #2d3748;
+            transition: all 0.2s ease-in-out;
+            outline: none;
+            background-color: #ffffff;
+        }
+        
+        .form-control:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -48,10 +115,6 @@
                     {% if user.is_staff %}
                         <a href="{% url 'cubicle_list_admin' %}" class="text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center">
                             <i class="fas fa-cogs nav-item-icon"></i><span class="nav-item-text">Gestión Cubículos</span>
-                        </a>
-                    {% else %}
-                        <a href="{% url 'my_rentals' %}" class="text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center">
-                            <i class="fas fa-book-reader nav-item-icon"></i><span class="nav-item-text">Mis Reservas</span>
                         </a>
                     {% endif %}
                     <form action="{% url 'logout' %}" method="post" class="inline-flex items-center">

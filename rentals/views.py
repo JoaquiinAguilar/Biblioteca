@@ -63,13 +63,6 @@ def rent_cubicle(request, cubicle_id):
             # Always update full_name and career, even if student existed
             student.full_name = full_name
             student.career = career
-
-            # Link student to user if authenticated and not staff
-            if request.user.is_authenticated and not request.user.is_staff:
-                # Ensure the student's user field is set to the current user
-                # This handles cases where the student might have existed without a user link
-                student.user = request.user
-            
             student.save() # Save all changes
 
             cubicle.status = 'ocupado'
@@ -204,19 +197,14 @@ def force_release_cubicle(request, pk):
 
     return redirect('cubicle_list_admin')
 
-@login_required
-def my_rentals(request):
-    # Get the active rental for the current user
-    active_rental = RentalLog.objects.filter(student__user=request.user, is_active=True).first()
-    return render(request, 'rentals/my_rentals.html', {'active_rental': active_rental})
+
 
 @login_required
 def release_my_cubicle(request, rental_id):
     rental_log = get_object_or_404(RentalLog, id=rental_id, is_active=True)
 
-    # Ensure the user releasing the cubicle is the one who rented it
-    if rental_log.student.user != request.user:
-        return redirect('my_rentals') # Or show an error message
+    # Allow any authenticated user to release any cubicle
+    # No permission check needed - all users can release occupied cubicles
 
     if request.method == 'POST':
         cubicle = rental_log.cubicle
@@ -227,7 +215,7 @@ def release_my_cubicle(request, rental_id):
         rental_log.actual_end_time = timezone.now()
         rental_log.save()
 
-        return redirect('my_rentals')
+        return redirect('dashboard')
     
     return render(request, 'rentals/release_confirm.html', {'rental_log': rental_log})
 
@@ -255,15 +243,9 @@ def search_student_ajax(request):
 def cubicle_detail(request, pk):
     cubicle = get_object_or_404(Cubicle, pk=pk)
     active_rental = RentalLog.objects.filter(cubicle=cubicle, is_active=True).first()
-    
-    # Determine if the current user is occupying this cubicle
-    is_occupying_user = False
-    if request.user.is_authenticated and active_rental and active_rental.student.user == request.user:
-        is_occupying_user = True
 
     context = {
         'cubicle': cubicle,
         'active_rental': active_rental,
-        'is_occupying_user': is_occupying_user,
     }
     return render(request, 'rentals/cubicle_detail.html', context)
